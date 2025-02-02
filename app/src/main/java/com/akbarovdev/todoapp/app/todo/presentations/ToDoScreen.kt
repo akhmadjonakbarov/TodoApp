@@ -1,6 +1,6 @@
-package com.akbarovdev.todoapp.app
+package com.akbarovdev.todoapp.app.todo.presentations
 
-import android.graphics.drawable.Icon
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,24 +31,52 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.akbarovdev.todoapp.app.todo.presentations.ToDoScreen
+import com.akbarovdev.todoapp.app.todo.domain.models.ToDo
+import com.akbarovdev.todoapp.app.todo.presentations.components.ToDoItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyApp(modifier: Modifier = Modifier) {
-    val configuration = LocalConfiguration.current
-    ToDoScreen(configuration)
-}
+fun ToDoScreen(configuration: Configuration) {
+    val todos = mutableListOf<ToDo>(
+        ToDo(title = "Clean home", isDone = false),
+        ToDo(title = "Doing homeworks", isDone = true),
+        ToDo(title = "Reading books", isDone = false)
+    )
+    Scaffold(topBar = {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Red),
 
-
-@Preview
-@Composable
-fun MyAppPreview() {
-    MyApp()
+            title = {
+                Text(
+                    "My ToDo List",
+                    style = TextStyle(
+                        color = Color.White,
+                        fontWeight = FontWeight.W700,
+                        fontSize = (configuration.screenHeightDp.dp.value / 35).sp
+                    )
+                )
+            }
+        )
+    }, floatingActionButton = {
+        FloatingActionButton(onClick = {}) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Icon")
+        }
+    }) { innerPadding ->
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            LazyColumn(Modifier.fillMaxWidth()) {
+                items(todos.size) { index ->
+                    val todo: ToDo = todos[index]
+                    ToDoItem(configuration, todo)
+                }
+            }
+        }
+    }
 }
